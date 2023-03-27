@@ -1,0 +1,1 @@
+Assets from previous chapters will be used progressively
