@@ -1,65 +1,81 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+// UnityEngine.UI needs to be used to change text on UI Elements
 using UnityEngine.UI;
 
 public class GameLogic : MonoBehaviour 
 {
-    static int points;
+    private int points;
+
     public Text scoreText;
-    public GameObject canvas;
     private GameObject goal;
+
+    // this variable holds how many coins there are still left in a scene
     private int leftToCollect;
 
-    private bool playGoal;
+    // switch to only play the goalAppearing Sound effect one time
+    private bool playGoalSFX;
 
     void Awake()
     {
+        // !!IMPORTANT!! use of FindGameObjectsWithTag
+        // returns an array of all GameObjects with the supplies tags
         GameObject[] objs = GameObject.FindGameObjectsWithTag("GameController");
 
+        // this checks if there is currenty another GameController in the active scene
         if (objs.Length > 1)
         {
+            // if that is the case, this GameObject will destroy itself and there will only ever be one active GameController
             Destroy(this.gameObject);
         }
 
-        // object  persists when switching scenes
+        // DontDestroyOnLoad: object persists when switching scenes
+        // has the effect that our score does not reset between changin levels
         DontDestroyOnLoad(this.gameObject);
-        DontDestroyOnLoad(GameObject.FindGameObjectWithTag("UI"));
+
+        scoreText = Text.FindObjectOfType<Text>();
     }
 
     // Start is called before the first frame update
     void Start()
     {
         points = 0;
-        leftToCollect = GameObject.FindGameObjectsWithTag("Collectible").Length;
+
         goal = GameObject.FindGameObjectWithTag("Goal");
-        goal.SetActive(false);
-        playGoal= true;
+
+        if (goal != null)
+        {
+            goal.SetActive(false);
+        }
+        playGoalSFX= true;
     }
 
     // Update is called once per frame
     void Update()
     {
+        // since ..GameObjectsWithTag returns an array we can simply check the length of the array to get the number of active coins/collectibles in a scene
         leftToCollect = GameObject.FindGameObjectsWithTag("Collectible").Length;
-        Debug.Log(leftToCollect);
 
-        scoreText.GetComponent<Text>().text = "Score: " + points;
+        //Debug.Log(leftToCollect);
 
+        // if there are no collectibles left we will make the goal appear
         if(leftToCollect <= 0)
         {
-            goal.SetActive(true);
-            if (playGoal)
+            if (goal != null)
+            {
+                goal.SetActive(true);
+            }
+            if (playGoalSFX)
             {
                 GameObject.FindGameObjectWithTag("MainCamera").GetComponent<AudioPlayer>().playGoalSFX();
-                playGoal = false;
+                playGoalSFX = false;
             }
         }
     }
-
-    
-
-    public void increasePoints()
+      public void increasePoints()
     {
        points += 50;
+       scoreText.GetComponent<Text>().text = "Score: " + points;
     }
 }

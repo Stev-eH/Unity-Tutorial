@@ -5,6 +5,12 @@ TagManager:
   serializedVersion: 2
   tags:
   - Env
+  - Goal
+  - Collectible
+  - Environment
+  - UI
+  - Secondary Camera
+  - Score
   layers:
   - Default
   - TransparentFX

@@ -29,6 +29,10 @@ public class PlayerController : MonoBehaviour
 
     public bool inJump;
 
+    public bool movementLocked;
+    const float lockTime = 1f;
+    public float lockTimer= 0;
+
     // Start is called before the first frame update
     // the Start function can be used for initializing an object and its properties
     void Start()
@@ -39,6 +43,7 @@ public class PlayerController : MonoBehaviour
         jumpingForce = 5f;
         inJump= false;
         speed= 3.0f;
+        movementLocked= true;
 
         playerTransform = GetComponent<Transform>(); //assigning the attached component to a variable so we can use and modify it
 
@@ -66,87 +71,108 @@ public class PlayerController : MonoBehaviour
 
         // we're using multiple ifs instead of an if else tree because that enables us to move in multiple directions at the same time
 
-        if (useTransformOrRigidbody) // Transform movement
+        if (!movementLocked)
         {
+            if (useTransformOrRigidbody) // Transform movement
+            {
 
-            /*
-             * An objects global position is represented by a Vector3(float x, float y, float z)
-             * By interacting with Transform.position we can directly interact with an objects Vector3
-             */
-
-            if (isLeftKey)
-            {
-                playerTransform.position += new Vector3(-speed * time, 0f, 0f);
-            }
-            if (isRightKey)
-            {
-                playerTransform.position += new Vector3(speed * time, 0f, 0f);
-            }
-            if (isUpKey)
-            {
-                playerTransform.position += new Vector3(0f, 0f, speed * time);
-            }
-            if (isDownKey)
-            {
-                playerTransform.position += new Vector3(0f, 0f, -speed * time);
-            }
-            if (grounded && isJumping)
-            {
-                inJump = true;
-                jumpingVelocity = jumpingForce;
-                grounded= false;
-            }
-
-            if(inJump)
-            {
-                transform.Translate(new Vector3(0, jumpingVelocity, 0) * time);
-                if (grounded)
-                    inJump = false;
-            }
+                /*
+                 * An objects global position is represented by a Vector3(float x, float y, float z)
+                 * By interacting with Transform.position we can directly interact with an objects Vector3
+                 */
 
 
+                if (isLeftKey)
+                {
+                    playerTransform.position += new Vector3(-speed * time, 0f, 0f);
+                }
+                if (isRightKey)
+                {
+                    playerTransform.position += new Vector3(speed * time, 0f, 0f);
+                }
+                if (isUpKey)
+                {
+                    playerTransform.position += new Vector3(0f, 0f, speed * time);
+                }
+                if (isDownKey)
+                {
+                    playerTransform.position += new Vector3(0f, 0f, -speed * time);
+                }
+                if (grounded && isJumping)
+                {
+                    inJump = true;
+                    jumpingVelocity = jumpingForce;
+                    grounded = false;
+                }
+
+                if (inJump)
+                {
+                    transform.Translate(new Vector3(0, jumpingVelocity, 0) * time);
+                    if (grounded)
+                        inJump = false;
+                }
+
+
+            }
+
+            if (!useTransformOrRigidbody) // Rigidbody movement
+            {
+                if (isLeftKey)
+                {
+                    playerRigidbody.AddForce(-transform.right * sidewayForce);
+                }
+                if (isRightKey)
+                {
+                    playerRigidbody.AddForce(transform.right * sidewayForce);
+                }
+                if (isUpKey)
+                {
+                    playerRigidbody.AddForce(transform.forward * sidewayForce);
+                }
+                if (isDownKey)
+                {
+                    playerRigidbody.AddForce(-transform.forward * sidewayForce);
+                }
+                if (grounded && isJumping)
+                {
+                    grounded = false;
+
+                    /* ForceMode.Impulse, instantly applies full force to the object
+                     * ForceMode default is ForceMode.Force, here the given force will be applied to the object over a second
+                     * https://gamedevbeginner.com/how-to-jump-in-unity-with-or-without-physics/
+                     */
+                    playerRigidbody.AddForce(Vector3.up * jumpingForce, ForceMode.Impulse);
+
+                }
+            }
         }
 
-        if (!useTransformOrRigidbody) // Rigidbody movement
+        else
         {
-            if (isLeftKey)
-            {
-                playerRigidbody.AddForce(-transform.right * sidewayForce);
-            }
-            if (isRightKey)
-            {
-                playerRigidbody.AddForce(transform.right * sidewayForce);
-            }
-            if (isUpKey)
-            {
-                playerRigidbody.AddForce(transform.forward * sidewayForce);
-            }
-            if (isDownKey)
-            {
-                playerRigidbody.AddForce(-transform.forward * sidewayForce);
-            }
-            if (grounded && isJumping)
-            {
-                grounded = false;
-
-                /* ForceMode.Impulse, instantly applies full force to the object
-                 * ForceMode default is ForceMode.Force, here the given force will be applied to the object over a second
-                 * https://gamedevbeginner.com/how-to-jump-in-unity-with-or-without-physics/
-                 */
-                playerRigidbody.AddForce(Vector3.up * jumpingForce, ForceMode.Impulse);
-
-            }
-
-
+            if (lockTimer <= 0)
+                movementLocked= false;
+            else
+                lockTimer -= Time.deltaTime;
         }
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        if (collision.collider.tag.Equals("Env"))
+        if (collision.collider.tag.Equals("Environment"))
         {
             grounded = true;
         }
+    }
+
+    // sets the character back to 0 1 0
+    public void ResetPosition()
+    {
+        playerTransform.position = new Vector3(0, 1f, 0);
+
+        // velocity has to be set to 0 aswell or else we keep sliding evben after our movement is locked
+        playerRigidbody.velocity = Vector3.zero;
+        movementLocked = true;
+        lockTimer = lockTime;
     }
 }
 

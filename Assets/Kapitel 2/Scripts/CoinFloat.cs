@@ -28,7 +28,7 @@ public class CoinFloat : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // coin bopping up and down
+        // coin floating up and down
         if(invertMovement)
         {
             coin.Translate(new Vector3(0, moveDistance, 0) * Time.deltaTime);
@@ -52,7 +52,7 @@ public class CoinFloat : MonoBehaviour
     {
         if(other.CompareTag("Player"))
         {
-            // direct access to the script attached to the gameController object
+            // a script is also a component to a GameObject, we can call functions of different scripts liks this
             gameController.GetComponent<GameLogic>().increasePoints();
 
             GameObject.FindGameObjectWithTag("MainCamera").GetComponent<AudioPlayer>().playCoinPickupSFX();
