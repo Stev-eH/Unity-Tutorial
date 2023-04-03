@@ -29,10 +29,6 @@ public class PlayerController : MonoBehaviour
 
     public bool inJump;
 
-    public bool movementLocked;
-    const float lockTime = 1f;
-    public float lockTimer= 0;
-
     // Start is called before the first frame update
     // the Start function can be used for initializing an object and its properties
     void Start()
@@ -43,7 +39,6 @@ public class PlayerController : MonoBehaviour
         jumpingForce = 5f;
         inJump= false;
         speed= 3.0f;
-        movementLocked= true;
 
         playerTransform = GetComponent<Transform>(); //assigning the attached component to a variable so we can use and modify it
 
@@ -71,8 +66,6 @@ public class PlayerController : MonoBehaviour
 
         // we're using multiple ifs instead of an if else tree because that enables us to move in multiple directions at the same time
 
-        if (!movementLocked)
-        {
             if (useTransformOrRigidbody) // Transform movement
             {
 
@@ -145,15 +138,6 @@ public class PlayerController : MonoBehaviour
 
                 }
             }
-        }
-
-        else
-        {
-            if (lockTimer <= 0)
-                movementLocked= false;
-            else
-                lockTimer -= Time.deltaTime;
-        }
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -162,17 +146,6 @@ public class PlayerController : MonoBehaviour
         {
             grounded = true;
         }
-    }
-
-    // sets the character back to 0 1 0
-    public void ResetPosition()
-    {
-        playerTransform.position = new Vector3(0, 1f, 0);
-
-        // velocity has to be set to 0 aswell or else we keep sliding evben after our movement is locked
-        playerRigidbody.velocity = Vector3.zero;
-        movementLocked = true;
-        lockTimer = lockTime;
     }
 }
 
