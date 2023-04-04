@@ -11,6 +11,7 @@ TagManager:
   - UI
   - Secondary Camera
   - Score
+  - AudioController
   layers:
   - Default
   - TransparentFX

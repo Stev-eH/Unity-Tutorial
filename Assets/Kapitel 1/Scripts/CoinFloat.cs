@@ -50,6 +50,11 @@ public class CoinFloat : MonoBehaviour
     {
         if(other.CompareTag("Player"))
         {
+            GameObject.FindGameObjectWithTag("GameController").GetComponent<GameController>().increaseScore();
+            if (GameObject.FindGameObjectWithTag("AudioController") != null)
+            {
+                GameObject.FindGameObjectWithTag("AudioController").GetComponent<AudioManager>().coinSFX();
+            }
             // destroys the corresponding GameObject
             Destroy(this.gameObject);
         }
