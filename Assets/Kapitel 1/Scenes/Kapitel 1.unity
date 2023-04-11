@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 168829872}
   m_Layer: 0
   m_Name: Walls
-  m_TagString: Env
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -172,7 +172,7 @@ GameObject:
   - component: {fileID: 202260180}
   m_Layer: 0
   m_Name: Cube (2)
-  m_TagString: Env
+  m_TagString: Environment
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -460,7 +460,7 @@ GameObject:
   - component: {fileID: 1138517478}
   m_Layer: 0
   m_Name: Cube
-  m_TagString: Env
+  m_TagString: Environment
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -572,7 +572,7 @@ GameObject:
   - component: {fileID: 1198646772}
   m_Layer: 0
   m_Name: Ground
-  m_TagString: Env
+  m_TagString: Environment
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -684,7 +684,7 @@ GameObject:
   - component: {fileID: 1852860723}
   m_Layer: 0
   m_Name: Cube (3)
-  m_TagString: Env
+  m_TagString: Environment
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -914,6 +914,8 @@ MonoBehaviour:
   speed: 0
   grounded: 0
   inJump: 0
+  movementLocked: 0
+  lockTimer: 0
 --- !u!1 &2052269454
 GameObject:
   m_ObjectHideFlags: 0
@@ -929,7 +931,7 @@ GameObject:
   - component: {fileID: 2052269456}
   m_Layer: 0
   m_Name: Cube (1)
-  m_TagString: Env
+  m_TagString: Environment
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
