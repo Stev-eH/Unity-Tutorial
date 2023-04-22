@@ -169,7 +169,7 @@ public class PlayerController : MonoBehaviour
     {
         playerTransform.position = new Vector3(0, 1f, 0);
 
-        // velocity has to be set to 0 aswell or else we keep sliding evben after our movement is locked
+        // velocity has to be set to 0 aswell or else we keep sliding even after our movement is locked
         playerRigidbody.velocity = Vector3.zero;
         movementLocked = true;
         lockTimer = lockTime;

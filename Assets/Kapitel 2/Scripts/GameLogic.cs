@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 // UnityEngine.UI needs to be used to change text on UI Elements
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameLogic : MonoBehaviour 
 {
@@ -16,6 +17,10 @@ public class GameLogic : MonoBehaviour
 
     // switch to only play the goalAppearing Sound effect one time
     private bool playGoalSFX;
+
+    public static bool resync;
+    public float resyncTime = 1f;
+    public float timeHolder;
 
     void Awake()
     {
@@ -34,42 +39,54 @@ public class GameLogic : MonoBehaviour
         // has the effect that our score does not reset between changin levels
         DontDestroyOnLoad(this.gameObject);
 
-        scoreText = Text.FindObjectOfType<Text>();
+
     }
 
     // Start is called before the first frame update
     void Start()
     {
         points = 0;
-
-        goal = GameObject.FindGameObjectWithTag("Goal");
-
-        if (goal != null)
-        {
-            goal.SetActive(false);
-        }
-        playGoalSFX= true;
+        resync = false;
+        initObjects();
+        timeHolder = resyncTime;
     }
 
     // Update is called once per frame
     void Update()
     {
-        // since ..GameObjectsWithTag returns an array we can simply check the length of the array to get the number of active coins/collectibles in a scene
-        leftToCollect = GameObject.FindGameObjectsWithTag("Collectible").Length;
-
-        //Debug.Log(leftToCollect);
-
-        // if there are no collectibles left we will make the goal appear
-        if(leftToCollect <= 0)
+        if (!resync)
         {
-            if (goal != null)
+            // since ..GameObjectsWithTag returns an array we can simply check the length of the array to get the number of active coins/collectibles in a scene
+            leftToCollect = GameObject.FindGameObjectsWithTag("Collectible").Length;
+
+            //Debug.Log(leftToCollect);
+
+            // if there are no collectibles left we will make the goal appear
+            if (leftToCollect <= 0)
             {
-                goal.SetActive(true);
+                if (goal != null)
+                {
+                    goal.SetActive(true);
+                }
+                if (playGoalSFX)
+                {
+                    GameObject.FindGameObjectWithTag("MainCamera").GetComponent<AudioPlayer>().playGoalSFX();
+                    playGoalSFX = false;
+                }
             }
-            if (playGoalSFX)
+        }
+
+        else
+        {
+            if(timeHolder > 0)
             {
-                GameObject.FindGameObjectWithTag("MainCamera").GetComponent<AudioPlayer>().playGoalSFX();
-                playGoalSFX = false;
+                timeHolder -= Time.deltaTime;
+            }
+            else
+            {
+                initObjects();
+                timeHolder = resyncTime;
+                resync = false;
             }
         }
     }
@@ -77,5 +94,23 @@ public class GameLogic : MonoBehaviour
     {
        points += 50;
        scoreText.GetComponent<Text>().text = "Score: " + points;
+    }
+
+    public void initObjects()
+    {
+        goal = GameObject.FindGameObjectWithTag("Goal");
+
+        if (goal != null)
+        {
+            goal.SetActive(false);
+        }
+        playGoalSFX = true;
+
+        scoreText = Text.FindObjectOfType<Text>();
+    }
+
+    public void toggleResync()
+    {
+        resync = true;
     }
 }
