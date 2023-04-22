@@ -10,7 +10,12 @@ public class GameController : MonoBehaviour
 
     private int score;
     private GameObject goal;
-    private bool sceneIsChanged; 
+    //private bool sceneIsChanged;
+    private bool resync;
+
+    // Bugfixing
+    private float loadingTime = 0.2f;
+    private float loadTimer;
 
     void Awake()
     {
@@ -23,9 +28,14 @@ public class GameController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        scoreText = Text.FindObjectOfType<Text>();
-        goal = GameObject.FindGameObjectWithTag("Goal");
-        goal.SetActive(false);
+        //scoreText = Text.FindObjectOfType<Text>();
+        //goal = GameObject.FindGameObjectWithTag("Goal");
+        //goal.SetActive(false);
+
+        //Bugfixing
+        initObjects();
+        resync = false;
+        loadTimer = loadingTime;
 
         DontDestroyOnLoad(this.gameObject);
     }
@@ -33,20 +43,23 @@ public class GameController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (sceneIsChanged)
+        if (!resync)
         {
-            goal = GameObject.FindGameObjectWithTag("Goal");
-            goal.SetActive(false);
-        }
-        scoreText = Text.FindObjectOfType<Text>();
-        if (scoreText != null)
-        {
-            scoreText.text = "Points: " + score;
             if (GameObject.FindGameObjectsWithTag("Collectible").Length <= 0)
             {
                 goal.SetActive(true);
             }
+            if (scoreText != null)
+            {
+                scoreText.text = "Points: " + score;
+                if (GameObject.FindGameObjectsWithTag("Collectible").Length <= 0)
+                {
+                    goal.SetActive(true);
+                }
+            }
         }
+        else
+            wait();
     }
 
     public void increaseScore()
@@ -56,8 +69,30 @@ public class GameController : MonoBehaviour
 
     public void loadToggle()
     {
-        sceneIsChanged = true;
+        resync = true;
     }
+
+    // Bugfixing
+    public void wait()
+    {
+        if(loadTimer > 0)
+        {
+            loadTimer -= Time.deltaTime;
+        }
+        else
+        {
+            initObjects();
+            resync = false;
+            loadTimer = loadingTime;
+        }
+    }
+
+    public void initObjects()
+    {
+        scoreText = Text.FindObjectOfType<Text>();
+        goal = GameObject.FindGameObjectWithTag("Goal");
+        goal.SetActive(false);
+    }    
 
 
 }
