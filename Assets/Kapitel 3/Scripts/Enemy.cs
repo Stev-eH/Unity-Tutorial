@@ -44,8 +44,8 @@ public class Enemy : MonoBehaviour
     {
         if(collision.gameObject.tag.Equals("Player"))
         {
-            collision.gameObject.GetComponent<PlayerController>().ResetPosition();
-            GameObject.FindGameObjectWithTag("GameController").GetComponent<GameLogic>().loseALife();
+            //collision.gameObject.GetComponent<PlayerController>().ResetPosition();
+            //GameObject.FindGameObjectWithTag("GameController").GetComponent<GameLogic>().loseALife();
         }
     }
 }

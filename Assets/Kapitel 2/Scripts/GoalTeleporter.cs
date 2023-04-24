@@ -11,9 +11,9 @@ public class GoalTeleporter : MonoBehaviour
     {
         if (other.CompareTag("Player"))
         {
-            GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>().ResetPosition();
-            //Debug.Log("Entered");
-            GameObject.FindGameObjectWithTag("GameController").GetComponent<GameLogic>().toggleResync();
+            //GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>().ResetPosition();
+            ////Debug.Log("Entered");
+            //GameObject.FindGameObjectWithTag("GameController").GetComponent<GameLogic>().toggleResync();
 
             /*buildIndex: when planning out the levels in a game, all used scenes need to be added in the build settings
             (File > Build Settings... > Scenes in build)
