@@ -138,6 +138,9 @@ public class PlayerController : MonoBehaviour
 
                 }
             }
+
+        if (Input.GetKeyDown(KeyCode.R))
+            ResetPosition();
     }
 
     private void OnCollisionEnter(Collision collision)
@@ -146,6 +149,12 @@ public class PlayerController : MonoBehaviour
         {
             grounded = true;
         }
+    }
+
+    public void ResetPosition()
+    {
+        playerTransform.position = new Vector3(0, 1f, 0);
+        playerRigidbody.velocity = Vector3.zero;
     }
 }
 

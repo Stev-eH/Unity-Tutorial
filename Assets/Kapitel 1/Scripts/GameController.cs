@@ -17,6 +17,12 @@ public class GameController : MonoBehaviour
     private float loadingTime = 0.2f;
     private float loadTimer;
 
+    public int lives;
+    public Text livesText;
+
+    public GameObject gameOverScreen;
+    public bool gameOverScreenShown;
+
     void Awake()
     {
         if(GameObject.FindGameObjectsWithTag("GameController").Length > 1)
@@ -36,6 +42,9 @@ public class GameController : MonoBehaviour
         initObjects();
         resync = false;
         loadTimer = loadingTime;
+        lives = 3;
+        gameOverScreenShown = false;
+
 
         DontDestroyOnLoad(this.gameObject);
     }
@@ -60,6 +69,9 @@ public class GameController : MonoBehaviour
         }
         else
             wait();
+
+        if (lives <= 0)
+            gameOver();
     }
 
     public void increaseScore()
@@ -89,10 +101,33 @@ public class GameController : MonoBehaviour
 
     public void initObjects()
     {
-        scoreText = Text.FindObjectOfType<Text>();
+        scoreText = GameObject.Find("Score").GetComponent<Text>();
+        livesText = GameObject.Find("Lives").GetComponent<Text>();
         goal = GameObject.FindGameObjectWithTag("Goal");
         goal.SetActive(false);
     }    
+
+    public void loseALife()
+    {
+        lives--;
+        livesText.text = "Lives: " + lives;
+    }
+
+    public void gameOver()
+    {
+        if(!gameOverScreenShown)
+        {
+            Instantiate(gameOverScreen);
+            gameOverScreenShown = true;
+        }
+
+        Destroy(GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerController>());
+
+        if(Input.GetKeyDown(KeyCode.R))
+        {
+            //Change to main menu
+        }
+    }
 
 
 }
