@@ -29,10 +29,13 @@ public class PlayerController : MonoBehaviour
 
     public bool inJump;
 
+    public bool controllerConnected;
+
     // Start is called before the first frame update
     // the Start function can be used for initializing an object and its properties
     void Start()
     {
+        controllerConnected = false;
         useTransformOrRigidbody = false; // Switch between movement with Transform or Rigidbody
         enableDeltaTime = true;
         sidewayForce = 13f;
@@ -43,6 +46,8 @@ public class PlayerController : MonoBehaviour
         playerTransform = GetComponent<Transform>(); //assigning the attached component to a variable so we can use and modify it
 
         playerRigidbody = GetComponent<Rigidbody>();
+
+        controllerConnected = controllerIsConnected();
     }
 
     // Update is called once per frame
@@ -55,16 +60,18 @@ public class PlayerController : MonoBehaviour
     void FixedUpdate()
     {
         float time = enableDeltaTime ? Time.fixedDeltaTime : 1f;
+        float horizontalMovement, verticalMovement;
 
         //get Keyboard input
         bool isLeftKey = Input.GetKey(KeyCode.LeftArrow);
         bool isRightKey = Input.GetKey(KeyCode.RightArrow);
         bool isUpKey = Input.GetKey(KeyCode.UpArrow);
         bool isDownKey = Input.GetKey(KeyCode.DownArrow);
-        bool isJumping = Input.GetKey(KeyCode.Space);
+        bool isJumping = (Input.GetKey(KeyCode.Space) || Input.GetKey(KeyCode.Joystick1Button0));
 
-
-        // we're using multiple ifs instead of an if else tree because that enables us to move in multiple directions at the same time
+        if (!controllerConnected)
+        {
+            // we're using multiple ifs instead of an if else tree because that enables us to move in multiple directions at the same time
 
             if (useTransformOrRigidbody) // Transform movement
             {
@@ -138,7 +145,26 @@ public class PlayerController : MonoBehaviour
 
                 }
             }
+        }
+        else
+        {
+            horizontalMovement = Input.GetAxis("Horizontal");
+            verticalMovement = Input.GetAxis("Vertical");
+            playerTransform.Translate(new Vector3(horizontalMovement * speed * Time.deltaTime, 0f,
+                verticalMovement * speed * Time.deltaTime));
 
+            if (grounded && isJumping)
+            {
+                grounded = false;
+
+                /* ForceMode.Impulse, instantly applies full force to the object
+                 * ForceMode default is ForceMode.Force, here the given force will be applied to the object over a second
+                 * https://gamedevbeginner.com/how-to-jump-in-unity-with-or-without-physics/
+                 */
+                playerRigidbody.AddForce(Vector3.up * jumpingForce, ForceMode.Impulse);
+
+            }
+        }
         if (Input.GetKeyDown(KeyCode.R))
             ResetPosition();
     }
@@ -155,6 +181,17 @@ public class PlayerController : MonoBehaviour
     {
         playerTransform.position = new Vector3(0, 1f, 0);
         playerRigidbody.velocity = Vector3.zero;
+    }
+
+    public bool controllerIsConnected()
+    {
+        string[] controllers = Input.GetJoystickNames();
+
+        if (controllers[0].Equals(""))
+            return false;
+
+        Debug.Log("Controller connected.");
+        return true;
     }
 }
 

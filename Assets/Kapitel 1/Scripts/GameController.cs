@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SocialPlatforms.Impl;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 
 public class GameController : MonoBehaviour
 {
     public Text scoreText;
+    public GameObject pausedText;
 
     private int score;
     private GameObject goal;
@@ -19,6 +21,9 @@ public class GameController : MonoBehaviour
 
     public int lives;
     public Text livesText;
+    private bool destroySelf = false;
+
+    private bool paused;
 
     public GameObject gameOverScreen;
     public bool gameOverScreenShown;
@@ -40,10 +45,12 @@ public class GameController : MonoBehaviour
 
         //Bugfixing
         initObjects();
+        pausedText.SetActive(false);
         resync = false;
         loadTimer = loadingTime;
         lives = 3;
         gameOverScreenShown = false;
+        paused = false;
 
 
         DontDestroyOnLoad(this.gameObject);
@@ -52,6 +59,24 @@ public class GameController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if(Input.GetKeyDown(KeyCode.P))
+        {
+            if (!paused)
+            {
+                Time.timeScale = 0;
+                pausedText.SetActive(true);
+            }
+            else
+            {
+                Time.timeScale = 1;
+                pausedText.SetActive(false);
+            }
+
+            paused = !paused;
+        }
+
+        if (destroySelf)
+            Destroy(this.gameObject);
         if (!resync)
         {
             if (GameObject.FindGameObjectsWithTag("Collectible").Length <= 0)
@@ -103,6 +128,7 @@ public class GameController : MonoBehaviour
     {
         scoreText = GameObject.Find("Score").GetComponent<Text>();
         livesText = GameObject.Find("Lives").GetComponent<Text>();
+        pausedText = GameObject.Find("Pause");
         goal = GameObject.FindGameObjectWithTag("Goal");
         goal.SetActive(false);
     }    
@@ -125,7 +151,8 @@ public class GameController : MonoBehaviour
 
         if(Input.GetKeyDown(KeyCode.R))
         {
-            //Change to main menu
+            SceneManager.LoadScene(0);
+            destroySelf = true;
         }
     }
 
